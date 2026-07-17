@@ -1,0 +1,26 @@
+@if (Open)
+{
+    <div class="modal-backdrop">
+        <div class="modal-panel" role="dialog" aria-modal="true">
+            <span class="stamp">@Label</span>
+            <h2>@Title</h2>
+            <p>@Message</p>
+            <div class="button-row">
+                <button class="button button-ghost" @onclick="Cancel">Cancelar</button>
+                <button class="button button-danger" @onclick="Confirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public string Label { get; set; } = "Confirmacion";
+    [Parameter] public string Title { get; set; } = "Confirmar accion";
+    [Parameter] public string Message { get; set; } = "";
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private Task Confirm() => OnConfirm.InvokeAsync();
+    private Task Cancel() => OnCancel.InvokeAsync();
+}

@@ -1,0 +1,252 @@
+@page "/expedientes/{Id:guid}"
+@attribute [Authorize]
+@inject ExpedienteService ExpedienteService
+@inject TramiteService TramiteService
+
+<PageTitle>SGE | Detalle de expediente</PageTitle>
+
+<ErrorBanner Message="@error" />
+
+@if (loading)
+{
+    <LoadingBlock />
+}
+else if (expediente is null)
+{
+    <EmptyState Label="No encontrado" Title="No se encontro el expediente" Description="Volver al listado para seleccionar otro registro.">
+        <a class="button button-primary" href="/expedientes">Volver a expedientes</a>
+    </EmptyState>
+}
+else
+{
+    <section class="case-header">
+        <div>
+            <span class="eyebrow">Expediente <span class="mono">@Formatters.ShortId(expediente.Id)</span></span>
+            <h1>@expediente.Caratula</h1>
+            <div class="case-meta">
+                <span class="status-stamp">@Formatters.Estado(expediente.Estado)</span>
+                <span>Creado @Formatters.Fecha(expediente.FechaCreacion)</span>
+                <span>Ultimo cambio @Formatters.Fecha(expediente.FechaUltimaModificacion)</span>
+            </div>
+        </div>
+        <a class="button button-ghost" href="/expedientes">Volver</a>
+    </section>
+
+    <section class="case-grid">
+        <article class="paper-panel">
+            <div class="section-title">
+                <div>
+                    <span class="eyebrow">Nueva actuacion</span>
+                    <h2>Agregar tramite</h2>
+                </div>
+            </div>
+            <form class="stack-form" @onsubmit="CrearTramiteAsync" @onsubmit:preventDefault>
+                <label class="field">
+                    <span>Etiqueta</span>
+                    <select @bind="nuevaEtiqueta">
+                        @foreach (var etiqueta in CatalogosSge.EtiquetasTramite)
+                        {
+                            <option value="@etiqueta">@Formatters.Etiqueta(etiqueta)</option>
+                        }
+                    </select>
+                </label>
+                <label class="field">
+                    <span>Contenido</span>
+                    <textarea rows="7" @bind="nuevoContenido" placeholder="Describir la actuacion administrativa" required></textarea>
+                </label>
+                <button class="button button-primary" disabled="@saving">Agregar tramite</button>
+            </form>
+        </article>
+
+        <article class="paper-panel">
+            <div class="section-title">
+                <div>
+                    <span class="eyebrow">Legajo</span>
+                    <h2>Actuaciones</h2>
+                </div>
+            </div>
+
+            @if (tramites.Count == 0)
+            {
+                <EmptyState Title="Sin actuaciones" Description="Agrega el primer tramite para iniciar la linea del expediente." />
+            }
+            else
+            {
+                <ol class="timeline">
+                    @foreach (var tramite in tramites.OrderByDescending(t => t.FechaCreacion))
+                    {
+                        <li>
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-card">
+                                @if (tramiteEditandoId == tramite.Id)
+                                {
+                                    <label class="field">
+                                        <span>Etiqueta</span>
+                                        <select @bind="etiquetaEditada">
+                                            @foreach (var etiqueta in CatalogosSge.EtiquetasTramite)
+                                            {
+                                                <option value="@etiqueta">@Formatters.Etiqueta(etiqueta)</option>
+                                            }
+                                        </select>
+                                    </label>
+                                    <label class="field">
+                                        <span>Contenido</span>
+                                        <textarea rows="5" @bind="contenidoEditado"></textarea>
+                                    </label>
+                                    <div class="button-row">
+                                        <button class="button button-small button-primary" @onclick="() => GuardarTramiteAsync(tramite)">Guardar</button>
+                                        <button class="button button-small button-ghost" @onclick="CancelarEdicionTramite">Cancelar</button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <header>
+                                        <span class="status-stamp">@Formatters.Etiqueta(tramite.Etiqueta)</span>
+                                        <span class="mono">@Formatters.ShortId(tramite.Id)</span>
+                                    </header>
+                                    <p>@tramite.Contenido</p>
+                                    <footer>
+                                        <span>@Formatters.Fecha(tramite.FechaCreacion)</span>
+                                        <div class="table-actions">
+                                            <button class="button button-small button-ghost" @onclick="() => EditarTramite(tramite)">Editar</button>
+                                            <button class="button button-small button-danger" @onclick="() => PedirEliminarTramite(tramite)">Eliminar</button>
+                                        </div>
+                                    </footer>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ol>
+            }
+        </article>
+    </section>
+}
+
+<ConfirmDialog Open="@confirmOpen"
+               Label="Baja de tramite"
+               Title="Eliminar tramite"
+               Message="@confirmMessage"
+               OnCancel="@(() => confirmOpen = false)"
+               OnConfirm="EliminarTramiteAsync" />
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private bool loading = true;
+    private bool saving;
+    private string? error;
+    private ExpedienteDto? expediente;
+    private List<TramiteDto> tramites = [];
+
+    private string nuevaEtiqueta = CatalogosSge.EtiquetasTramite[0];
+    private string nuevoContenido = "";
+
+    private Guid? tramiteEditandoId;
+    private string etiquetaEditada = CatalogosSge.EtiquetasTramite[0];
+    private string contenidoEditado = "";
+
+    private bool confirmOpen;
+    private string confirmMessage = "";
+    private TramiteDto? tramiteAEliminar;
+
+    protected override Task OnParametersSetAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        error = null;
+
+        try
+        {
+            expediente = await ExpedienteService.ObtenerAsync(Id);
+            tramites = (await TramiteService.ListarAsync(Id)).ToList();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task CrearTramiteAsync()
+    {
+        if (string.IsNullOrWhiteSpace(nuevoContenido))
+        {
+            return;
+        }
+
+        saving = true;
+        error = null;
+
+        try
+        {
+            await TramiteService.CrearAsync(Id, nuevoContenido.Trim(), nuevaEtiqueta);
+            nuevoContenido = "";
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private void EditarTramite(TramiteDto tramite)
+    {
+        tramiteEditandoId = tramite.Id;
+        etiquetaEditada = string.IsNullOrWhiteSpace(tramite.Etiqueta) ? CatalogosSge.EtiquetasTramite[0] : tramite.Etiqueta;
+        contenidoEditado = tramite.Contenido ?? "";
+    }
+
+    private void CancelarEdicionTramite()
+    {
+        tramiteEditandoId = null;
+    }
+
+    private async Task GuardarTramiteAsync(TramiteDto tramite)
+    {
+        try
+        {
+            await TramiteService.ModificarAsync(tramite.Id, contenidoEditado.Trim(), etiquetaEditada);
+            tramiteEditandoId = null;
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+    }
+
+    private void PedirEliminarTramite(TramiteDto tramite)
+    {
+        tramiteAEliminar = tramite;
+        confirmMessage = $"Se eliminara el tramite {Formatters.ShortId(tramite.Id)} del expediente.";
+        confirmOpen = true;
+    }
+
+    private async Task EliminarTramiteAsync()
+    {
+        if (tramiteAEliminar is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await TramiteService.EliminarAsync(tramiteAEliminar.Id);
+            confirmOpen = false;
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+            confirmOpen = false;
+        }
+    }
+}

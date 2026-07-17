@@ -1,0 +1,108 @@
+@page "/mis-datos"
+@attribute [Authorize]
+@inject UsuarioService UsuarioService
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>SGE | Mis datos</PageTitle>
+
+<section class="page-heading">
+    <div>
+        <span class="eyebrow">Cuenta</span>
+        <h1>Mis datos</h1>
+        <p>Actualiza la informacion basica asociada al usuario autenticado.</p>
+    </div>
+</section>
+
+<ErrorBanner Message="@error" />
+
+<section class="paper-panel narrow-panel">
+    @if (loading)
+    {
+        <LoadingBlock />
+    }
+    else
+    {
+        @if (!string.IsNullOrWhiteSpace(success))
+        {
+            <div class="notice notice-success">
+                <strong>Cambios guardados</strong>
+                <span>@success</span>
+            </div>
+        }
+
+        <form class="stack-form" @onsubmit="GuardarAsync" @onsubmit:preventDefault>
+            <label class="field">
+                <span>Nombre</span>
+                <input @bind="nombre" required />
+            </label>
+            <label class="field">
+                <span>Correo electronico</span>
+                <input type="email" @bind="correo" required />
+            </label>
+            <label class="field">
+                <span>Nueva contrasena</span>
+                <input type="password" @bind="nuevaContrasena" placeholder="Dejar vacio para mantener la actual" />
+            </label>
+            <button class="button button-primary" disabled="@saving">Guardar cambios</button>
+        </form>
+    }
+</section>
+
+@code {
+    private bool loading = true;
+    private bool saving;
+    private string? error;
+    private string? success;
+    private string nombre = "";
+    private string correo = "";
+    private string? nuevaContrasena;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var state = await AuthStateProvider.GetAuthenticationStateAsync();
+            var idText = state.User.FindFirst("ID")?.Value;
+            if (!Guid.TryParse(idText, out var id))
+            {
+                throw new InvalidOperationException("No se pudo identificar el usuario autenticado.");
+            }
+
+            var usuario = await UsuarioService.ObtenerAsync(id)
+                ?? throw new InvalidOperationException("No se encontro el usuario autenticado.");
+
+            nombre = usuario.Nombre;
+            correo = usuario.CorreoElectronico;
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task GuardarAsync()
+    {
+        saving = true;
+        error = null;
+        success = null;
+
+        try
+        {
+            await UsuarioService.ModificarMisDatosAsync(nombre.Trim(), correo.Trim(), nuevaContrasena);
+            nuevaContrasena = null;
+            success = "Tus datos fueron actualizados.";
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+}

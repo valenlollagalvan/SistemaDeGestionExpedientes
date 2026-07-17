@@ -1,0 +1,184 @@
+@page "/usuarios"
+@attribute [Authorize]
+@inject UsuarioService UsuarioService
+
+<PageTitle>SGE | Usuarios</PageTitle>
+
+<section class="page-heading">
+    <div>
+        <span class="eyebrow">Administracion</span>
+        <h1>Usuarios y permisos</h1>
+        <p>Consulta usuarios, ajusta permisos operativos y administra accesos del sistema.</p>
+    </div>
+</section>
+
+<ErrorBanner Message="@error" />
+
+<section class="paper-panel">
+    <div class="section-title">
+        <div>
+            <span class="eyebrow">Padron interno</span>
+            <h2>Usuarios registrados</h2>
+        </div>
+        <button class="button button-ghost" @onclick="LoadAsync">Actualizar</button>
+    </div>
+
+    @if (loading)
+    {
+        <LoadingBlock />
+    }
+    else if (usuarios.Count == 0)
+    {
+        <EmptyState Title="No hay usuarios visibles" Description="El listado requiere una cuenta con permisos de administracion." />
+    }
+    else
+    {
+        <div class="user-grid">
+            @foreach (var usuario in usuarios)
+            {
+                <article class="user-panel">
+                    <header>
+                        <div>
+                            <span class="mono">@Formatters.ShortId(usuario.Id)</span>
+                            <h2>@usuario.Nombre</h2>
+                            <p>@usuario.CorreoElectronico</p>
+                        </div>
+                        @if (usuario.EsAdministrador)
+                        {
+                            <span class="status-stamp">Administrador</span>
+                        }
+                    </header>
+
+                    <div class="permission-grid">
+                        @foreach (var permiso in CatalogosSge.Permisos)
+                        {
+                            <label class="check-row">
+                                <input type="checkbox"
+                                       checked="@PermisosSeleccionados(usuario).Contains(permiso.Valor)"
+                                       @onchange="args => TogglePermiso(usuario.Id, permiso.Valor, args)" />
+                                <span>@permiso.Descripcion</span>
+                            </label>
+                        }
+                    </div>
+
+                    <footer>
+                        <button class="button button-small button-primary" @onclick="() => GuardarPermisosAsync(usuario)">Guardar permisos</button>
+                        <button class="button button-small button-danger" @onclick="() => PedirEliminar(usuario)">Eliminar usuario</button>
+                    </footer>
+                </article>
+            }
+        </div>
+    }
+</section>
+
+<ConfirmDialog Open="@confirmOpen"
+               Label="Baja de usuario"
+               Title="Eliminar usuario"
+               Message="@confirmMessage"
+               OnCancel="@(() => confirmOpen = false)"
+               OnConfirm="EliminarAsync" />
+
+@code {
+    private bool loading = true;
+    private string? error;
+    private List<UsuarioDto> usuarios = [];
+    private readonly Dictionary<Guid, HashSet<int>> permisosEditados = [];
+
+    private bool confirmOpen;
+    private string confirmMessage = "";
+    private UsuarioDto? usuarioAEliminar;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        error = null;
+        permisosEditados.Clear();
+
+        try
+        {
+            usuarios = (await UsuarioService.ListarAsync()).ToList();
+            foreach (var usuario in usuarios)
+            {
+                permisosEditados[usuario.Id] = usuario.Permisos.ToHashSet();
+            }
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private HashSet<int> PermisosSeleccionados(UsuarioDto usuario)
+    {
+        if (!permisosEditados.TryGetValue(usuario.Id, out var permisos))
+        {
+            permisos = usuario.Permisos.ToHashSet();
+            permisosEditados[usuario.Id] = permisos;
+        }
+
+        return permisos;
+    }
+
+    private void TogglePermiso(Guid usuarioId, int permiso, ChangeEventArgs args)
+    {
+        var selected = args.Value is bool value && value;
+        var permisos = permisosEditados[usuarioId];
+
+        if (selected)
+        {
+            permisos.Add(permiso);
+        }
+        else
+        {
+            permisos.Remove(permiso);
+        }
+    }
+
+    private async Task GuardarPermisosAsync(UsuarioDto usuario)
+    {
+        error = null;
+
+        try
+        {
+            await UsuarioService.ModificarPermisosAsync(usuario.Id, usuario.Permisos, permisosEditados[usuario.Id]);
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+    }
+
+    private void PedirEliminar(UsuarioDto usuario)
+    {
+        usuarioAEliminar = usuario;
+        confirmMessage = $"Se eliminara el usuario {usuario.Nombre}. Esta accion no se puede deshacer.";
+        confirmOpen = true;
+    }
+
+    private async Task EliminarAsync()
+    {
+        if (usuarioAEliminar is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await UsuarioService.EliminarAsync(usuarioAEliminar.Id);
+            confirmOpen = false;
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+            confirmOpen = false;
+        }
+    }
+}

@@ -1,0 +1,60 @@
+@page "/login"
+@attribute [AllowAnonymous]
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>SGE | Iniciar sesion</PageTitle>
+
+<main class="auth-page">
+    <section class="auth-copy">
+        <span class="stamp">Acceso reservado</span>
+        <h1>Mesa de entradas digital</h1>
+        <p>Ingresa para administrar expedientes, tramites y permisos con trazabilidad de usuario.</p>
+    </section>
+
+    <section class="auth-card">
+        <h2>Iniciar sesion</h2>
+        <ErrorBanner Message="@error" />
+        <form @onsubmit="SubmitAsync" @onsubmit:preventDefault>
+            <label class="field">
+                <span>Correo electronico</span>
+                <input type="email" autocomplete="email" @bind="correo" required />
+            </label>
+            <label class="field">
+                <span>Contrasena</span>
+                <input type="password" autocomplete="current-password" @bind="contrasena" required />
+            </label>
+            <button class="button button-primary" disabled="@submitting">@(submitting ? "Validando..." : "Entrar")</button>
+        </form>
+        <p class="auth-link">No tenes cuenta? <a href="/registro">Registrar usuario</a></p>
+    </section>
+</main>
+
+@code {
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+
+    private string correo = "";
+    private string contrasena = "";
+    private string? error;
+    private bool submitting;
+
+    private async Task SubmitAsync()
+    {
+        submitting = true;
+        error = null;
+
+        try
+        {
+            await AuthService.LoginAsync(correo, contrasena);
+            Navigation.NavigateTo(string.IsNullOrWhiteSpace(ReturnUrl) ? "/" : ReturnUrl, replace: true);
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            submitting = false;
+        }
+    }
+}

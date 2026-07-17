@@ -1,0 +1,35 @@
+﻿@inherits LayoutComponentBase
+
+<AuthorizeView>
+    <Authorized>
+        <div class="shell">
+            <NavMenu />
+            <main class="workspace">
+                <header class="topbar">
+                    <div>
+                        <span class="eyebrow">Mesa de entradas digital</span>
+                        <p>Gestion documental, actuaciones y permisos</p>
+                    </div>
+                    <button class="button button-ghost" @onclick="LogoutAsync">Cerrar sesion</button>
+                </header>
+                <section class="content">
+                    @Body
+                </section>
+            </main>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        @Body
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Inject] private AuthService AuthService { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private async Task LogoutAsync()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/login", replace: true);
+    }
+}

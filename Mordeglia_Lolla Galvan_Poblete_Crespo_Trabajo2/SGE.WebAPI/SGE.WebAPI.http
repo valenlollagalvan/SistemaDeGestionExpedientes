@@ -1,0 +1,6 @@
+@SGE.WebAPI_HostAddress = http://localhost:5134
+
+GET {{SGE.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

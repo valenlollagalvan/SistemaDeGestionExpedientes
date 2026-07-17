@@ -1,0 +1,248 @@
+@page "/expedientes"
+@attribute [Authorize]
+@inject ExpedienteService ExpedienteService
+
+<PageTitle>SGE | Expedientes</PageTitle>
+
+<section class="page-heading">
+    <div>
+        <span class="eyebrow">Archivo general</span>
+        <h1>Expedientes</h1>
+        <p>Consulta, alta, modificacion de caratula, cambio de estado y baja de expedientes.</p>
+    </div>
+</section>
+
+<ErrorBanner Message="@error" />
+
+<section class="paper-panel">
+    <div class="section-title">
+        <div>
+            <span class="eyebrow">Nuevo legajo</span>
+            <h2>Crear expediente</h2>
+        </div>
+    </div>
+    <form class="inline-form" @onsubmit="CrearAsync" @onsubmit:preventDefault>
+        <label class="field">
+            <span>Caratula</span>
+            <input @bind="nuevaCaratula" placeholder="Ej. Solicitud de habilitacion comercial" required />
+        </label>
+        <button class="button button-primary" disabled="@saving">Crear expediente</button>
+    </form>
+</section>
+
+<section class="paper-panel">
+    <div class="section-title">
+        <div>
+            <span class="eyebrow">Registro</span>
+            <h2>Listado de expedientes</h2>
+        </div>
+        <button class="button button-ghost" @onclick="LoadAsync">Actualizar</button>
+    </div>
+
+    @if (loading)
+    {
+        <LoadingBlock />
+    }
+    else if (expedientes.Count == 0)
+    {
+        <EmptyState Title="No hay expedientes cargados" Description="Usa el formulario superior para iniciar el primer expediente." />
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Caratula</th>
+                        <th>Estado</th>
+                        <th>Creacion</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var expediente in expedientes.OrderByDescending(e => e.FechaUltimaModificacion))
+                    {
+                        <tr>
+                            <td><span class="mono">@Formatters.ShortId(expediente.Id)</span></td>
+                            <td>
+                                @if (editandoId == expediente.Id)
+                                {
+                                    <input class="table-input" @bind="caratulaEditada" />
+                                }
+                                else
+                                {
+                                    <a href="@($"/expedientes/{expediente.Id}")">@expediente.Caratula</a>
+                                }
+                            </td>
+                            <td>
+                                @if (editandoId == expediente.Id)
+                                {
+                                    <select class="table-input" @bind="estadoEditado">
+                                        @foreach (var estado in CatalogosSge.Estados)
+                                        {
+                                            <option value="@estado">@Formatters.Estado(estado)</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <span class="status-stamp">@Formatters.Estado(expediente.Estado)</span>
+                                }
+                            </td>
+                            <td>@Formatters.Fecha(expediente.FechaCreacion)</td>
+                            <td>
+                                <div class="table-actions">
+                                    @if (editandoId == expediente.Id)
+                                    {
+                                        <button class="button button-small button-primary" @onclick="() => GuardarEdicionAsync(expediente)">Guardar</button>
+                                        <button class="button button-small button-ghost" @onclick="CancelarEdicion">Cancelar</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="button button-small button-ghost" @onclick="() => IniciarEdicion(expediente)">Editar</button>
+                                        <button class="button button-small button-danger" @onclick="() => PedirEliminar(expediente)">Eliminar</button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<ConfirmDialog Open="@confirmOpen"
+               Label="Baja de expediente"
+               Title="Eliminar expediente"
+               Message="@confirmMessage"
+               OnCancel="@(() => confirmOpen = false)"
+               OnConfirm="EliminarAsync" />
+
+@code {
+    private bool loading = true;
+    private bool saving;
+    private string? error;
+    private string nuevaCaratula = "";
+    private List<ExpedienteDto> expedientes = [];
+
+    private Guid? editandoId;
+    private string caratulaEditada = "";
+    private string estadoEditado = CatalogosSge.Estados[0];
+
+    private bool confirmOpen;
+    private string confirmMessage = "";
+    private ExpedienteDto? expedienteAEliminar;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        error = null;
+
+        try
+        {
+            expedientes = (await ExpedienteService.ListarAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task CrearAsync()
+    {
+        if (string.IsNullOrWhiteSpace(nuevaCaratula))
+        {
+            return;
+        }
+
+        saving = true;
+        error = null;
+
+        try
+        {
+            await ExpedienteService.CrearAsync(nuevaCaratula.Trim());
+            nuevaCaratula = "";
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private void IniciarEdicion(ExpedienteDto expediente)
+    {
+        editandoId = expediente.Id;
+        caratulaEditada = expediente.Caratula;
+        estadoEditado = string.IsNullOrWhiteSpace(expediente.Estado) ? CatalogosSge.Estados[0] : expediente.Estado;
+    }
+
+    private void CancelarEdicion()
+    {
+        editandoId = null;
+    }
+
+    private async Task GuardarEdicionAsync(ExpedienteDto expediente)
+    {
+        error = null;
+
+        try
+        {
+            if (!string.Equals(expediente.Caratula, caratulaEditada, StringComparison.Ordinal))
+            {
+                await ExpedienteService.CambiarCaratulaAsync(expediente.Id, caratulaEditada.Trim());
+            }
+
+            if (!string.Equals(expediente.Estado, estadoEditado, StringComparison.Ordinal))
+            {
+                await ExpedienteService.CambiarEstadoAsync(expediente.Id, estadoEditado);
+            }
+
+            editandoId = null;
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+    }
+
+    private void PedirEliminar(ExpedienteDto expediente)
+    {
+        expedienteAEliminar = expediente;
+        confirmMessage = $"Se eliminara el expediente {Formatters.ShortId(expediente.Id)}. Esta accion no se puede deshacer.";
+        confirmOpen = true;
+    }
+
+    private async Task EliminarAsync()
+    {
+        if (expedienteAEliminar is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await ExpedienteService.EliminarAsync(expedienteAEliminar.Id);
+            confirmOpen = false;
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+            confirmOpen = false;
+        }
+    }
+}

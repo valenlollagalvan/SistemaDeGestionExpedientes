@@ -1,0 +1,11 @@
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <div class="notice notice-error" role="alert">
+        <strong>No se pudo completar la operacion</strong>
+        <span>@Message</span>
+    </div>
+}
+
+@code {
+    [Parameter] public string? Message { get; set; }
+}

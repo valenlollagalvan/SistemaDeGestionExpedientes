@@ -1,0 +1,103 @@
+﻿@page "/"
+@attribute [Authorize]
+@inject ExpedienteService ExpedienteService
+
+<PageTitle>SGE | Inicio</PageTitle>
+
+<section class="page-heading hero-ledger">
+    <div>
+        <span class="eyebrow">Tablero operativo</span>
+        <h1>Mesa de entradas activa</h1>
+        <p>Vista rapida del estado documental, los expedientes abiertos y las ultimas actuaciones registradas.</p>
+    </div>
+    <a class="button button-primary" href="/expedientes">Abrir expedientes</a>
+</section>
+
+<ErrorBanner Message="@error" />
+
+@if (loading)
+{
+    <LoadingBlock />
+}
+else
+{
+    <section class="metric-ledger">
+        <article>
+            <span>Total</span>
+            <strong>@expedientes.Count</strong>
+            <small>expedientes registrados</small>
+        </article>
+        <article>
+            <span>Para resolver</span>
+            <strong>@expedientes.Count(e => e.Estado == "ParaResolver")</strong>
+            <small>requieren seguimiento</small>
+        </article>
+        <article>
+            <span>Finalizados</span>
+            <strong>@expedientes.Count(e => e.Estado == "Finalizado")</strong>
+            <small>con cierre administrativo</small>
+        </article>
+    </section>
+
+    <section class="paper-panel">
+        <div class="section-title">
+            <div>
+                <span class="eyebrow">Movimiento reciente</span>
+                <h2>Ultimos expedientes modificados</h2>
+            </div>
+        </div>
+
+        @if (expedientes.Count == 0)
+        {
+            <EmptyState Title="Todavia no hay expedientes" Description="Crea el primer expediente para comenzar a registrar actuaciones." />
+        }
+        else
+        {
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Caratula</th>
+                            <th>Estado</th>
+                            <th>Ultima modificacion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var expediente in expedientes.OrderByDescending(e => e.FechaUltimaModificacion).Take(6))
+                        {
+                            <tr>
+                                <td><span class="mono">@Formatters.ShortId(expediente.Id)</span></td>
+                                <td><a href="@($"/expedientes/{expediente.Id}")">@expediente.Caratula</a></td>
+                                <td><span class="status-stamp">@Formatters.Estado(expediente.Estado)</span></td>
+                                <td>@Formatters.Fecha(expediente.FechaUltimaModificacion)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    private bool loading = true;
+    private string? error;
+    private List<ExpedienteDto> expedientes = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            expedientes = (await ExpedienteService.ListarAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}

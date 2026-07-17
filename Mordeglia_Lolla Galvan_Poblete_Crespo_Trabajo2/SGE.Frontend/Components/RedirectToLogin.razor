@@ -1,0 +1,18 @@
+@inject NavigationManager Navigation
+
+<div class="auth-redirect">
+    <div class="paper-panel">
+        <span class="stamp">Sesion requerida</span>
+        <h1>Necesitas iniciar sesion</h1>
+        <p>Para consultar expedientes y actuaciones, ingresa con una cuenta registrada.</p>
+        <a class="button button-primary" href="/login">Ir al login</a>
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        var returnUrl = Uri.EscapeDataString(Navigation.ToBaseRelativePath(Navigation.Uri));
+        Navigation.NavigateTo($"/login?returnUrl={returnUrl}", replace: true);
+    }
+}

@@ -1,0 +1,63 @@
+@page "/registro"
+@attribute [AllowAnonymous]
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>SGE | Registro</PageTitle>
+
+<main class="auth-page">
+    <section class="auth-copy">
+        <span class="stamp">Alta de usuario</span>
+        <h1>Crear acceso administrativo</h1>
+        <p>El registro crea una cuenta para operar sobre expedientes segun los permisos asignados.</p>
+    </section>
+
+    <section class="auth-card">
+        <h2>Registrar usuario</h2>
+        <ErrorBanner Message="@error" />
+        <form @onsubmit="SubmitAsync" @onsubmit:preventDefault>
+            <label class="field">
+                <span>Nombre</span>
+                <input @bind="nombre" required />
+            </label>
+            <label class="field">
+                <span>Correo electronico</span>
+                <input type="email" autocomplete="email" @bind="correo" required />
+            </label>
+            <label class="field">
+                <span>Contrasena</span>
+                <input type="password" autocomplete="new-password" @bind="contrasena" required />
+            </label>
+            <button class="button button-primary" disabled="@submitting">@(submitting ? "Registrando..." : "Crear usuario")</button>
+        </form>
+        <p class="auth-link">Ya tenes cuenta? <a href="/login">Iniciar sesion</a></p>
+    </section>
+</main>
+
+@code {
+    private string nombre = "";
+    private string correo = "";
+    private string contrasena = "";
+    private string? error;
+    private bool submitting;
+
+    private async Task SubmitAsync()
+    {
+        submitting = true;
+        error = null;
+
+        try
+        {
+            await AuthService.RegistrarAsync(nombre, correo, contrasena);
+            Navigation.NavigateTo("/login", replace: true);
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            submitting = false;
+        }
+    }
+}
