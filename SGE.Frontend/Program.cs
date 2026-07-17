@@ -8,7 +8,14 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5134";
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"];
+
+// En desarrollo se usa la API local. En Vercel, reemplazar __API_BASE_URL__
+// mediante el build command o configurar este valor en appsettings.json.
+if (string.IsNullOrWhiteSpace(apiBaseUrl) || apiBaseUrl == "__API_BASE_URL__")
+{
+    apiBaseUrl = "http://localhost:5134";
+}
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<LocalStorageService>();

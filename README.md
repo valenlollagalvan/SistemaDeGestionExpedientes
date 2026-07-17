@@ -140,6 +140,21 @@ URLs locales:
 
 La API y el frontend se ejecutan como procesos separados durante el desarrollo.
 
+## Despliegue del frontend en Vercel
+
+El repositorio incluye `vercel.json` para publicar automáticamente el frontend
+Blazor WebAssembly y resolver correctamente sus rutas internas al recargar la
+página.
+
+En Vercel, importar el repositorio usando como raíz la carpeta que contiene
+`vercel.json` y crear la variable de entorno `API_BASE_URL` con la URL pública
+de la API, por ejemplo `https://api.ejemplo.com`. Luego ejecutar un nuevo deploy.
+
+La API (`SGE.WebAPI`) debe desplegarse como un servicio .NET separado. No se
+debe usar `localhost` en `API_BASE_URL`, porque el navegador del usuario no
+puede acceder al servidor local del desarrollador. También hay que agregar la
+URL pública de Vercel a `Cors__AllowedOrigins__0` en la configuración de la API.
+
 ## Configuración por entorno
 
 En producción, los valores sensibles deben configurarse mediante variables de entorno o un gestor de secretos. No se debe versionar una clave JWT real.

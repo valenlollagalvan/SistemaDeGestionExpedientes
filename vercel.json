@@ -1,0 +1,11 @@
+{
+  "buildCommand": "dotnet publish SGE.Frontend/SGE.Frontend.csproj -c Release -o .vercel/output && if [ -n \"$API_BASE_URL\" ]; then sed -i \"s|__API_BASE_URL__|$API_BASE_URL|g\" .vercel/output/wwwroot/appsettings.json; fi",
+  "outputDirectory": ".vercel/output/wwwroot",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "cleanUrls": true
+}
