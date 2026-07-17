@@ -1,0 +1,17 @@
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/bin/Debug/net10.0/SGE.Infraestructura.deps.json
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/bin/Debug/net10.0/SGE.Infraestructura.dll
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/bin/Debug/net10.0/SGE.Infraestructura.pdb
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/bin/Debug/net10.0/SGE.Aplicacion.dll
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/bin/Debug/net10.0/SGE.Dominio.dll
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/bin/Debug/net10.0/SGE.Dominio.pdb
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/bin/Debug/net10.0/SGE.Aplicacion.pdb
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/obj/Debug/net10.0/SGE.Infraestructura.csproj.AssemblyReference.cache
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/obj/Debug/net10.0/SGE.Infraestructura.GeneratedMSBuildEditorConfig.editorconfig
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/obj/Debug/net10.0/SGE.Infraestructura.AssemblyInfoInputs.cache
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/obj/Debug/net10.0/SGE.Infraestructura.AssemblyInfo.cs
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/obj/Debug/net10.0/SGE.Infraestructura.csproj.CoreCompileInputs.cache
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/obj/Debug/net10.0/SGE.Infr.0FEB7F8C.Up2Date
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/obj/Debug/net10.0/SGE.Infraestructura.dll
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/obj/Debug/net10.0/refint/SGE.Infraestructura.dll
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/obj/Debug/net10.0/SGE.Infraestructura.pdb
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Infraestructura/obj/Debug/net10.0/ref/SGE.Infraestructura.dll

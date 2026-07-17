@@ -1,0 +1,11 @@
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Dominio/bin/Debug/net10.0/SGE.Dominio.deps.json
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Dominio/bin/Debug/net10.0/SGE.Dominio.dll
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Dominio/bin/Debug/net10.0/SGE.Dominio.pdb
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Dominio/obj/Debug/net10.0/SGE.Dominio.GeneratedMSBuildEditorConfig.editorconfig
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Dominio/obj/Debug/net10.0/SGE.Dominio.AssemblyInfoInputs.cache
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Dominio/obj/Debug/net10.0/SGE.Dominio.AssemblyInfo.cs
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Dominio/obj/Debug/net10.0/SGE.Dominio.csproj.CoreCompileInputs.cache
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Dominio/obj/Debug/net10.0/SGE.Dominio.dll
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Dominio/obj/Debug/net10.0/refint/SGE.Dominio.dll
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Dominio/obj/Debug/net10.0/SGE.Dominio.pdb
+/home/user/Descargas/Mordeglia_Lolla Galvan_Crespo_Poblete_Trabajo2/Mordeglia_Lolla Galvan_Poblete_Crespo_Trabajo2/SGE.Dominio/obj/Debug/net10.0/ref/SGE.Dominio.dll
