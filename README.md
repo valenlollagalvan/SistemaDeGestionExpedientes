@@ -215,16 +215,4 @@ La solución está organizada en capas de dominio, aplicación, infraestructura 
 
 Este proyecto me permitió profundizar en arquitectura de software, diseño de APIs, modelado de dominio, autenticación, autorización, persistencia relacional, diseño de interfaces administrativas y evolución de un prototipo hacia una base de producto escalable.
 
-**Enlaces:**
 
-- GitHub: `[agregar enlace]`
-- Demo: `[agregar enlace]`
-- Portfolio: `[agregar enlace]`
-- Video de presentación: `[agregar enlace]`
-
-## Autor
-
-Valentín Lolla Galván
-
-- LinkedIn: `www.linkedin.com/in/valentin-lolla-galvan`
-- Email: `valentinlollagalvan@gmail.com`
